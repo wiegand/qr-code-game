@@ -1,19 +1,26 @@
+import { h, Fragment } from 'preact'
 import { useState, useEffect, useCallback, useRef } from 'preact/hooks'
 import './app.css'
-import { hashQRCodeData, getColorFromHash, getNameFromHash, isRareQRCode, getRainbowColor } from './helpers'
+import { hashQRCodeData, getColorFromHash, getNameFromHash, getRainbowColor } from './helpers'
+import jsQR, { } from "jsqr";
 
-const createFace = (name, color, hat) => {
-  return { name, color, hat };
+interface Face {
+  name: string;
+  color: string;
+}
+
+const createFace = (name: string, color: string): Face => {
+  return { name, color };
 };
 
 export function App() {
-  const [collection, setCollection] = useState([]);
-  const [errors, setErrors] = useState([]);
-  const [cameraOn, setCameraOn] = useState(false);
-  const [foundFace, setFoundFace] = useState(null);
+  const [collection, setCollection] = useState<Face[]>([]);
+  const [errors, setErrors] = useState<string[]>([]);
+  const [cameraOn, setCameraOn] = useState<boolean>(false);
+  const [foundFace, setFoundFace] = useState<Face | null>(null);
 
-  const video = useRef(null);
-  const canvas = useRef(null);
+  const video = useRef<HTMLVideoElement | null>(null);
+  const canvas = useRef<HTMLCanvasElement | null>(null);
 
   console.log("Rendered");
 
@@ -33,8 +40,9 @@ export function App() {
       // Get video stream from the camera
       navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
         .then(stream => {
+          if (!video.current) return;
           video.current.srcObject = stream;
-          video.current.setAttribute("playsinline", true);
+          video.current.setAttribute("playsinline", "true");
           requestAnimationFrame(scanQRCode);
         })
         .catch(() => {
@@ -42,10 +50,8 @@ export function App() {
         });
     } else {
       if (video.current.srcObject === null) return;
-      video.current.srcObject.getTracks().forEach(track => {
-        track.stop();
-      })
-
+      const stream = video.current.srcObject as MediaStream;
+      stream.getTracks().forEach(track => track.stop())
       video.current.srcObject = null;
     }
   }, [cameraOn, video])
@@ -56,6 +62,7 @@ export function App() {
     if (video.current === null || canvas.current === null) return;
 
     const ctx = canvas.current.getContext('2d');
+    if (!ctx) return
 
     if (video.current.readyState === video.current.HAVE_ENOUGH_DATA) {
       ctx.drawImage(video.current, 0, 0, canvas.current.width, canvas.current.height);
@@ -64,7 +71,7 @@ export function App() {
 
       if (qrCode) {
         const hash = hashQRCodeData(qrCode.data);
-        hash.then(hashBuffer => {
+        hash.then((hashBuffer: ArrayBuffer) => {
           // const isRare = isRareQRCode(hashBuffer);
           const isRare = false
           const color = isRare ? getRainbowColor() : getColorFromHash(hashBuffer);
@@ -79,27 +86,43 @@ export function App() {
   }, [video, canvas])
 
 
-  const faceUI = (face, showButton = false) => {
+  const foundFaceUI = (face: Face) => {
     return (
-      <>
+      <div className="flex flex-col">
         <div className="collected-face" style={{
           "background-color": face.color
         }}>
           <div class="eye left" ></div>
           <div class="eye right"></div>
         </div >
-          <p>{face.name}</p>
 
-        {showButton && (<button onClick={() => {
+        <p class="font-bold">{face.name}</p>
+
+        <button onClick={() => {
           setCollection([...collection, createFace(face.name, face.color)]);
-        }}>Add!</button>)}
-      </>
+        }}>Add!</button>
+      </div>
+    )
+  }
+
+  const faceUI = (face: Face) => {
+    return (
+      <div className="flex flex-col">
+        <div className="collected-face" style={{
+          "background-color": face.color
+        }}>
+          <div class="eye left" ></div>
+          <div class="eye right"></div>
+        </div >
+
+        <p class="font-bold">{face.name}</p>
+      </div>
     )
   };
 
   return (
-    <>
-      <h1>QR Code game</h1>
+    <div className="max-w-screen-md mx-auto">
+      <h1 className="text-2xl font-bold">QR Code game</h1>
       <div>
         <video ref={video} autoplay></video>
         <canvas ref={canvas} width="640" height="480" style="display: none;"></canvas>
@@ -108,22 +131,24 @@ export function App() {
 
           {cameraOn && <p id="scan-status">Scanning...</p>}
 
-          {foundFace && (faceUI(foundFace, true))}
+          {foundFace && (foundFaceUI(foundFace))}
 
         </div>
       </div>
 
-      <div id="collection">{collection.map(face => faceUI(face, false))}</div>
+      <div id="collection">{collection.map(faceUI)}</div>
 
-      {collection.length > 0 && (<button id="reset-btn" onClick={
-        () => {
-          const confirmed = confirm("Are you sure you want to reset your collection?");
-          if (!confirmed) return;
-          setCollection([]);
-        }
-      }>Reset Collection</button>)}
+      <div className="flex gap-2 mx-auto">
+        {collection.length > 0 && (<button className="text-white rounded bg-orange-500 py-2 px-3" onClick={
+          () => {
+            const confirmed = confirm("Are you sure you want to reset your collection?");
+            if (!confirmed) return;
+            setCollection([]);
+          }
+        }>Reset Collection</button>)}
 
-      <button onClick={() => setCameraOn(!cameraOn)}>{cameraOn ? "Stop Camera" : "Start Camera"}</button>
-    </>
+        <button className="text-white rounded bg-orange-500 py-2 px-3" onClick={() => setCameraOn(!cameraOn)}>{cameraOn ? "Stop Camera" : "Start Camera"}</button>
+      </div>
+    </div>
   )
 }
