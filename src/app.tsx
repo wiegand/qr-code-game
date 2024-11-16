@@ -1,7 +1,7 @@
 import { h, Fragment } from 'preact'
 import { useState, useEffect, useCallback, useRef } from 'preact/hooks'
 import './app.css'
-import { Rarity, getQRCodeRarity,useThrottle, hashQRCodeData, getColorFromHash, getNameFromHash, getRainbowColor } from './helpers'
+import { Rarity, getQRCodeRarity, useThrottle, hashQRCodeData, getColorFromHash, getNameFromHash, getRainbowColor } from './helpers'
 
 import jsQR from "jsqr";
 
@@ -11,11 +11,11 @@ interface Face {
   rarity: Rarity;
 }
 
-const createFace = (name: string, color: string, rarity:Rarity = 1): Face => {
+const createFace = (name: string, color: string, rarity: Rarity = 1): Face => {
   return { name, color, rarity };
 };
 
-const isRare = (rarity: Rarity):boolean => rarity > 5;
+const isRare = (rarity: Rarity): boolean => rarity > 5;
 
 export function App() {
   const [collection, setCollection] = useState<Face[]>([]);
@@ -104,7 +104,7 @@ export function App() {
         <p class="font-bold">{face.name}: {face.rarity}</p>
 
         <button onClick={() => {
-          setCollection([...collection, createFace(face.name, face.color)]);
+          setCollection([...collection, createFace(face.name, face.color, face.rarity)]);
         }}>Add!</button>
       </div>
     )

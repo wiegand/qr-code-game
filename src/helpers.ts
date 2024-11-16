@@ -52,49 +52,33 @@ export function useThrottle<T>(value: T, interval = 500): T {
   return throttledValue
 }
 
-function hashArrayBufferToNumber(buffer: ArrayBuffer): number {
-    const view = new DataView(buffer);
-    let hash = 0;
-    
-    for (let i = 0; i < view.byteLength; i++) {
-        const byte = view.getUint8(i);
-        hash = (hash << 5) - hash + byte;
-        hash |= 0; // Convert to 32bit integer
-    }
-    
-    return Math.abs(hash);
-}
-
-// Function to identify rare QR codes
 export function getQRCodeRarity(buffer: ArrayBuffer): Rarity {
-    const maxRarity = 11;
-    const hash = hashArrayBufferToNumber(buffer);
-    const normalizedValue = hash / Math.pow(2, 32); // Normalize hash to a value between 0 and 1
-
-    // Define an exponential distribution
-    const probabilities: number[] = [];
-    const lambda = 0.20; // Adjust this value to control the steepness of the distribution
-    let totalProbability = 0;
-
-    for (let i = 1; i <= maxRarity; i++) {
-        const probability = Math.exp(-lambda * i);
-        probabilities.push(probability);
-        totalProbability += probability;
+  // Step 1: Generate a deterministic hash from the ArrayBuffer input
+  function hashArrayBuffer(buffer) {
+    let hash = 0;
+    const view = new Uint8Array(buffer); // Create a byte view for the ArrayBuffer
+    for (let i = 0; i < view.length; i++) {
+      hash = ((hash << 5) - hash + view[i]) & 0xffffffff; // 32-bit integer
     }
+    return Math.abs(hash);
+  }
 
-    // Normalize probabilities so they sum to 1
-    for (let i = 0; i < probabilities.length; i++) {
-        probabilities[i] /= totalProbability;
-    }
+  // Step 2: Normalize hash based on the length of the input to ensure consistent distribution
+  function normalizeHash(hash, length) {
+    const baseValue = length > 0 ? hash / length : hash;
+    const normalized = (baseValue % 1 + 1) / 2; // Normalize to [0, 1)
+    return normalized;
+  }
 
-    // Find the rarity based on the normalized value
-    let cumulativeProbability = 0;
-    for (let i = 0; i < probabilities.length; i++) {
-        cumulativeProbability += probabilities[i];
-        if (normalizedValue < cumulativeProbability) {
-            return i + 1; // Rarity is 1-indexed
-        }
-    }
+  // Step 3: Transform the normalized value to a number between 1 and 11 with exponential distribution
+  function normalizedToNumber(normalized) {
+    const exponent = 2.5; // Adjust to control distribution skew (higher means more skew to 1)
+    const value = Math.pow(normalized, exponent) * 10 + 1; // Map to range [1, 11]
 
-    return maxRarity; // Fallback in case of rounding errors
+    return Math.min(11, Math.max(1, Math.round(value))); // Ensure value is within range 1-11
+  }
+
+  const hash = hashArrayBuffer(buffer);
+  const normalizedHash = normalizeHash(hash, buffer.byteLength);
+  return normalizedToNumber(normalizedHash);
 }
