@@ -1,0 +1,160 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  background-color: #f3f3f3;
+}
+
+#video {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+#output {
+  margin-top: 20px;
+}
+
+#qr-result {
+  font-size: 18px;
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+#scan-status {
+  font-size: 14px;
+  color: #FF5733;
+}
+
+#face-container {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  background-color: #fff;
+  border: 2px solid #4CAF50;
+  border-radius: 10px;
+  width: 200px;
+  text-align: center;
+}
+
+#face-container .square {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+  border-radius: 15px;
+}
+
+#face-container .eye {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  background-color: #333;
+  border-radius: 50%;
+  top: 35px;
+}
+
+#face-container .eye.left {
+  left: 30px;
+}
+
+#face-container .eye.right {
+  right: 30px;
+}
+
+#face-container h2 {
+  font-size: 16px;
+  margin-top: 20px;
+  color: #333;
+}
+
+#add-to-collection-btn {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: none;
+}
+
+#add-to-collection-btn:hover {
+  background-color: #45a049;
+}
+
+#collection {
+  margin-top: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.collected-face {
+  width: 150px;
+  height: 150px;
+  margin: 10px;
+  border-radius: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ffcc00;
+  text-align: center;
+  color: #fff;
+  position: relative;
+}
+
+.collected-face .eye {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  background-color: #333;
+  border-radius: 50%;
+  top: 35px;
+}
+
+.collected-face .eye.left {
+  left: 30px;
+}
+
+.collected-face .eye.right {
+  right: 30px;
+}
+
+.collected-face .hat {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 40px;
+}
+
+.collected-face p {
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+  text-align: center;
+  margin: 0;
+  color: #333;
+  font-weight: bold;
+}
+
+#reset-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#reset-btn:hover {
+  background-color: #e53935;
+}
