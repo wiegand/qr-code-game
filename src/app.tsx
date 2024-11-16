@@ -1,8 +1,8 @@
 import { h, Fragment } from 'preact'
 import { useState, useEffect, useCallback, useRef } from 'preact/hooks'
 import './app.css'
-import { hashQRCodeData, getColorFromHash, getNameFromHash, getRainbowColor } from './helpers'
-import jsQR, { } from "jsqr";
+import { useThrottle, hashQRCodeData, getColorFromHash, getNameFromHash, getRainbowColor } from './helpers'
+import jsQR from "jsqr";
 
 interface Face {
   name: string;
@@ -21,6 +21,8 @@ export function App() {
 
   const video = useRef<HTMLVideoElement | null>(null);
   const canvas = useRef<HTMLCanvasElement | null>(null);
+
+  const throttledFoundFace = useThrottle(foundFace, 500);
 
   console.log("Rendered");
 
@@ -131,7 +133,7 @@ export function App() {
 
           {cameraOn && <p id="scan-status">Scanning...</p>}
 
-          {foundFace && (foundFaceUI(foundFace))}
+          {throttledFoundFace && (foundFaceUI(throttledFoundFace))}
 
         </div>
       </div>
