@@ -18,7 +18,6 @@ export function App() {
   const [collection, setCollection] = useState([]);
   const [errors, setErrors] = useState([]);
   const [cameraOn, setCameraOn] = useState(false);
-  const [faces, setFaces] = useState([]);
   const [foundFace, setFoundFace] = useState(null);
 
   const video = useRef(null);
@@ -88,15 +87,21 @@ export function App() {
   }, [video, canvas])
 
 
-  const faceUI = (face) => {
+  const faceUI = (face, showButton = false) => {
     return (
-      <div className="collected-face" style={{
-        "background-color": face.color
-      }}>
-        <div class="eye left" ></div>
-        <div class="eye right"></div>
-        <p>{face.name}</p>
-      </div >
+      <>
+        <div className="collected-face" style={{
+          "background-color": face.color
+        }}>
+          <div class="eye left" ></div>
+          <div class="eye right"></div>
+          <p>{face.name}</p>
+        </div >
+
+        {showButton && (<button onClick={() => {
+          setCollection([...collection, createFace(face.name, face.color)]);
+        }}>Add!</button>)}
+      </>
     )
   };
 
@@ -111,12 +116,12 @@ export function App() {
 
           {cameraOn && <p id="scan-status">Scanning...</p>}
 
-          {foundFace && (faceUI(foundFace))}
+          {foundFace && (faceUI(foundFace, true))}
 
         </div>
       </div>
 
-      <div id="collection">{faces.map(faceUI)}</div>
+      <div id="collection">{collection.map(face => faceUI(face, false))}</div>
 
       <button id="reset-btn" onClick={
         () => {
