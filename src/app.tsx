@@ -101,7 +101,7 @@ export function App() {
           <div class="eye right"></div>
         </div >
 
-        <p class="font-bold">{face.name}</p>
+        <p class="font-bold">{face.name}: {face.rarity}</p>
 
         <button onClick={() => {
           setCollection([...collection, createFace(face.name, face.color)]);

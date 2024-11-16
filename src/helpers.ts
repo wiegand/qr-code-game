@@ -73,7 +73,7 @@ export function getQRCodeRarity(buffer: ArrayBuffer): Rarity {
 
     // Define an exponential distribution
     const probabilities: number[] = [];
-    const lambda = 1.5; // Adjust this value to control the steepness of the distribution
+    const lambda = 0.20; // Adjust this value to control the steepness of the distribution
     let totalProbability = 0;
 
     for (let i = 1; i <= maxRarity; i++) {
