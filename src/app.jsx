@@ -2,14 +2,6 @@ import { useState, useEffect, useCallback, useRef } from 'preact/hooks'
 import './app.css'
 import { hashQRCodeData, getColorFromHash, getNameFromHash, isRareQRCode, getRainbowColor } from './helpers'
 
-
-// // Display face with name and color
-// function showFaceWithName(data) {
-// }
-
-
-
-
 const createFace = (name, color, hat) => {
   return { name, color, hat };
 };
@@ -95,8 +87,8 @@ export function App() {
         }}>
           <div class="eye left" ></div>
           <div class="eye right"></div>
-          <p>{face.name}</p>
         </div >
+          <p>{face.name}</p>
 
         {showButton && (<button onClick={() => {
           setCollection([...collection, createFace(face.name, face.color)]);
@@ -123,13 +115,13 @@ export function App() {
 
       <div id="collection">{collection.map(face => faceUI(face, false))}</div>
 
-      <button id="reset-btn" onClick={
+      {collection.length > 0 && (<button id="reset-btn" onClick={
         () => {
           const confirmed = confirm("Are you sure you want to reset your collection?");
           if (!confirmed) return;
           setCollection([]);
         }
-      }>Reset Collection</button>
+      }>Reset Collection</button>)}
 
       <button onClick={() => setCameraOn(!cameraOn)}>{cameraOn ? "Stop Camera" : "Start Camera"}</button>
     </>
