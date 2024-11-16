@@ -1,17 +1,21 @@
 import { h, Fragment } from 'preact'
 import { useState, useEffect, useCallback, useRef } from 'preact/hooks'
 import './app.css'
-import { useThrottle, hashQRCodeData, getColorFromHash, getNameFromHash, getRainbowColor } from './helpers'
+import { Rarity, getQRCodeRarity,useThrottle, hashQRCodeData, getColorFromHash, getNameFromHash, getRainbowColor } from './helpers'
+
 import jsQR from "jsqr";
 
 interface Face {
   name: string;
   color: string;
+  rarity: Rarity;
 }
 
-const createFace = (name: string, color: string): Face => {
-  return { name, color };
+const createFace = (name: string, color: string, rarity:Rarity = 1): Face => {
+  return { name, color, rarity };
 };
+
+const isRare = (rarity: Rarity):boolean => rarity > 5;
 
 export function App() {
   const [collection, setCollection] = useState<Face[]>([]);
@@ -74,11 +78,10 @@ export function App() {
       if (qrCode) {
         const hash = hashQRCodeData(qrCode.data);
         hash.then((hashBuffer: ArrayBuffer) => {
-          // const isRare = isRareQRCode(hashBuffer);
-          const isRare = false
-          const color = isRare ? getRainbowColor() : getColorFromHash(hashBuffer);
+          const rarity = getQRCodeRarity(hashBuffer);
+          const color = isRare(rarity) ? getRainbowColor() : getColorFromHash(hashBuffer);
           const name = getNameFromHash(hashBuffer);
-          setFoundFace({ name, color });
+          setFoundFace({ name, color, rarity });
         });
       } else {
         setFoundFace(null);
@@ -109,7 +112,7 @@ export function App() {
 
   const faceUI = (face: Face) => {
     return (
-      <div className="flex flex-col">
+      <div className="flex flex-col transition-transform transform hover:scale-110">
         <div className="collected-face" style={{
           "background-color": face.color
         }}>
@@ -117,7 +120,7 @@ export function App() {
           <div class="eye right"></div>
         </div >
 
-        <p class="font-bold">{face.name}</p>
+        <p class="font-bold">{face.name}: {face.rarity}</p>
       </div>
     )
   };
