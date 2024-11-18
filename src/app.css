@@ -3,7 +3,7 @@ body {
   text-align: center;
   margin: 0;
   padding: 0;
-  background-color: #f3f3f3;
+  background-color: #5b50ae;
 }
 
 #video {
@@ -55,7 +55,6 @@ body {
   position: absolute;
   width: 25px;
   height: 25px;
-  background-color: #333;
   border-radius: 50%;
   top: 35px;
 }

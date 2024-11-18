@@ -1,7 +1,8 @@
-import { h, Fragment } from 'preact'
+import { h } from 'preact'
 import { useState, useEffect, useCallback, useRef } from 'preact/hooks'
 import './app.css'
 import { Rarity, getQRCodeRarity, useThrottle, hashQRCodeData, getColorFromHash, getNameFromHash, getRainbowColor } from './helpers'
+import tinycolor from 'tinycolor2';
 
 import jsQR from "jsqr";
 
@@ -111,13 +112,22 @@ export function App() {
   }
 
   const faceUI = (face: Face) => {
+    let c = tinycolor(face.color);
+    if (c.isLight()) c = c.darken(55);
+    else c = c.lighten(55);
+    const contrastColor = c.toHexString();
+    const isReallyDark = tinycolor(face.color).getLuminance() < 0.05;
+
+    const borderColor = isReallyDark ? "rgba(255, 255, 255, 0.9)" : "rgba(0, 0, 0, 0.9)";
+
     return (
-      <div className="flex flex-col transition-transform transform hover:scale-110">
-        <div className="collected-face" style={{
-          "background-color": face.color
+      <div className="flex flex-col transition-transform transform hover:scale-110 hover:rotate-6">
+        <div className="collected-face border-2" style={{
+          "background-color": face.color,
+          "border-color": borderColor
         }}>
-          <div class="eye left" ></div>
-          <div class="eye right"></div>
+          <div class="eye left" style={{ "background-color": contrastColor }}></div>
+          <div class="eye right" style={{ "background-color": contrastColor }}></div>
         </div >
 
         <p class="font-bold">{face.name}: {face.rarity}</p>
@@ -127,13 +137,13 @@ export function App() {
 
   return (
     <div className="max-w-screen-md mx-auto">
-      <h1 className="text-2xl font-bold">QR Code game</h1>
+      <h1 className="my-6 text-2xl font-bold text-teal-300">
+        QR Code game
+      </h1>
       <div>
         <video ref={video} autoplay></video>
         <canvas ref={canvas} width="640" height="480" style="display: none;"></canvas>
         <div id="output">
-          <p id="qr-result">QR Code: <span id="result"></span></p>
-
           {cameraOn && <p id="scan-status">Scanning...</p>}
 
           {throttledFoundFace && (foundFaceUI(throttledFoundFace))}
@@ -141,9 +151,11 @@ export function App() {
         </div>
       </div>
 
-      <div id="collection">{collection.map(faceUI)}</div>
+      <div id="collection">
+        {collection.map(faceUI)}
+      </div>
 
-      <div className="flex gap-2 mx-auto">
+      <div className="flex gap-2 mx-auto mt-36 justify-center">
         {collection.length > 0 && (<button className="text-white rounded bg-orange-500 py-2 px-3" onClick={
           () => {
             const confirmed = confirm("Are you sure you want to reset your collection?");
