@@ -146,12 +146,14 @@ export function App() {
 
   return (
     <div className="max-w-screen-md mx-auto">
-      <h1 className="my-6 text-2xl font-bold text-teal-300">
+      <h1 className="my-6 text-7xl text-teal-300 font-black">
         QR Code game
       </h1>
       <div>
         <video ref={video} autoplay></video>
+
         <canvas ref={canvas} width="640" height="480" style="display: none;"></canvas>
+
         <div id="output">
           {cameraOn && <p id="scan-status">Scanning...</p>}
 
@@ -165,7 +167,7 @@ export function App() {
       </div>
 
       <div className="flex gap-2 mx-auto mt-36 justify-center">
-        {collection.length > 0 && (<button className="text-white rounded bg-orange-500 py-2 px-3" onClick={
+        {collection.length > 0 && (<button className="font-semibold text-white rounded bg-orange-500 py-2 px-3" onClick={
           () => {
             const confirmed = confirm("Are you sure you want to reset your collection?");
             if (!confirmed) return;
@@ -173,7 +175,7 @@ export function App() {
           }
         }>Reset Collection</button>)}
 
-        <button className="text-white rounded bg-orange-500 py-2 px-3" onClick={() => setCameraOn(c => !c)}>{cameraOn ? "Stop Camera" : "Start Camera"}</button>
+        <button className="text-white font-semibold rounded bg-orange-500 py-2 px-3" onClick={() => setCameraOn(c => !c)}>{cameraOn ? "Stop Camera" : "Start Camera"}</button>
       </div>
     </div>
   )

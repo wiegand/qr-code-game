@@ -1,5 +1,4 @@
 body {
-  font-family: Arial, sans-serif;
   text-align: center;
   margin: 0;
   padding: 0;
@@ -9,24 +8,15 @@ body {
 #video {
   width: 100%;
   max-width: 600px;
-  height: auto;
+  height: 0;
   border: 1px solid #ccc;
   border-radius: 8px;
-}
-
-#output {
-  margin-top: 20px;
 }
 
 #qr-result {
   font-size: 18px;
   color: #4CAF50;
   font-weight: bold;
-}
-
-#scan-status {
-  font-size: 14px;
-  color: #FF5733;
 }
 
 #face-container {
