@@ -130,7 +130,16 @@ export function App() {
           <div class="eye right" style={{ "background-color": contrastColor }}></div>
         </div >
 
-        <p class="font-bold">{face.name}: {face.rarity}</p>
+        <div class="mt-2">
+          <div class="inline-block relative border-2 font-bold bg-teal-300 rounded-md px-2" style={{
+            "border-color": borderColor
+          }}>
+            <div>{face.name}</div>
+            <div class="size-6 rounded-full bg-red-600 text-white font-normal absolute -top-3 -right-3">
+              {face.rarity}
+            </div>
+          </div>
+        </div>
       </div>
     )
   };
