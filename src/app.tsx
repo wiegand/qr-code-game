@@ -152,7 +152,7 @@ export function App() {
           }
         }>Reset Collection</button>)}
 
-        <button className="text-white rounded bg-orange-500 py-2 px-3" onClick={() => setCameraOn(!cameraOn)}>{cameraOn ? "Stop Camera" : "Start Camera"}</button>
+        <button className="text-white rounded bg-orange-500 py-2 px-3" onClick={() => setCameraOn(c => !c)}>{cameraOn ? "Stop Camera" : "Start Camera"}</button>
       </div>
     </div>
   )
