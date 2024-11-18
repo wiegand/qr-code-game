@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "classnames": "^2.5.1",
     "jsqr": "^1.4.0",
     "preact": "^10.24.3",
     "tinycolor2": "^1.6.0"

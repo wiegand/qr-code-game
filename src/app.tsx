@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, useRef } from 'preact/hooks'
 import './app.css'
 import { Rarity, getQRCodeRarity, useThrottle, hashQRCodeData, getColorFromHash, getNameFromHash, getRainbowColor } from './helpers'
 import tinycolor from 'tinycolor2';
+import classNames from 'classnames';
 
 import jsQR from "jsqr";
 
@@ -16,7 +17,7 @@ const createFace = (name: string, color: string, rarity: Rarity = 1): Face => {
   return { name, color, rarity };
 };
 
-const isRare = (rarity: Rarity): boolean => rarity > 5;
+const isRare = (rarity: Rarity): boolean => rarity >= 8;
 
 export function App() {
   const [collection, setCollection] = useState<Face[]>([]);
@@ -113,19 +114,25 @@ export function App() {
 
   const faceUI = (face: Face) => {
     let c = tinycolor(face.color);
-    if (c.isLight()) c = c.darken(55);
-    else c = c.lighten(55);
+    if (c.isLight()) c = c.desaturate(10).darken(65);
+    else c = c.desaturate(10).lighten(55);
     const contrastColor = c.toHexString();
-    const isReallyDark = tinycolor(face.color).getLuminance() < 0.05;
+    const isReallyDark = tinycolor(face.color).getLuminance() < 0.005;
 
     const borderColor = isReallyDark ? "rgba(255, 255, 255, 0.9)" : "rgba(0, 0, 0, 0.9)";
 
+    const className = classNames("collected-face border-2", {
+      "animate-rainbow": isRare(face.rarity)
+    });
+
+    const style = {
+      "background-color": isRare(face.rarity) ? 'animate-rainbow' : face.color,
+      "border-color": borderColor
+    };
+
     return (
       <div className="flex flex-col transition-transform transform hover:scale-110 hover:rotate-6">
-        <div className="collected-face border-2" style={{
-          "background-color": face.color,
-          "border-color": borderColor
-        }}>
+        <div className={className} style={style}>
           <div class="eye left" style={{ "background-color": contrastColor }}></div>
           <div class="eye right" style={{ "background-color": contrastColor }}></div>
         </div >
@@ -155,18 +162,18 @@ export function App() {
         <canvas ref={canvas} width="640" height="480" style="display: none;"></canvas>
 
         <div id="output">
-          {cameraOn && <p id="scan-status">Scanning...</p>}
+          {cameraOn && <p className="text-red-400">Scanning...</p>}
 
           {throttledFoundFace && (foundFaceUI(throttledFoundFace))}
 
         </div>
       </div>
 
-      <div id="collection">
+      <div id="collection" className="gap-6">
         {collection.map(faceUI)}
       </div>
 
-      <div className="flex gap-2 mx-auto mt-36 justify-center">
+      <div className="flex gap-4 mx-auto mt-36 justify-center">
         {collection.length > 0 && (<button className="font-semibold text-white rounded bg-orange-500 py-2 px-3" onClick={
           () => {
             const confirmed = confirm("Are you sure you want to reset your collection?");
